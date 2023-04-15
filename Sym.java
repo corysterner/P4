@@ -1,6 +1,6 @@
 public class Sym {
 	private String type;
-	
+
 	public Sym(String type) {
 		this.type = type;
 	}
@@ -12,4 +12,5 @@ public class Sym {
 	public String toString() {
 		return type;
 	}
+	
 }

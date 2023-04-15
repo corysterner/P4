@@ -54,9 +54,18 @@ public class P4 {
         }
 		
 		// ****** Add name analysis part here ******
-		
-        ((ASTnode)root.value).unparse(outFile, 0);
-        outFile.close();
+	try {
+	    ((ProgramNode)root.value).analysis();
+	} catch (Exception ex) {
+            System.err.println("exception occured during name analysis: " + ex);
+            System.exit(-1);	
+	}
+	
+	if (ErrMsg.getAbort() == false) {
+        	((ASTnode)root.value).unparse(outFile, 0);
+	}
+        
+	outFile.close();
 
         return;
     }

@@ -130,6 +130,12 @@ class ProgramNode extends ASTnode {
         myDeclList.unparse(p, indent);
     }
 
+    public void analysis() {
+	SymTab table = new SymTab();
+	table.addScope();
+    	myDeclList.analysis(table);
+    }
+
     // one child
     private DeclListNode myDeclList;
 }
@@ -151,6 +157,18 @@ class DeclListNode extends ASTnode {
         }
     }
 
+    public void analysis(SymTab table) {
+        Iterator it = myDecls.iterator();
+	try {
+	    while (it.hasNext()) {
+	    	((DeclNode)it.next()).analysis(table);
+	    }
+	} catch (NoSuchElementException ex) {
+            System.err.println("unexpected NoSuchElementException in DeclListNode.print");
+            System.exit(-1);
+	}
+    }
+
     // list of children (DeclNodes)
     private List<DeclNode> myDecls;
 }
@@ -164,6 +182,13 @@ class StmtListNode extends ASTnode {
         Iterator<StmtNode> it = myStmts.iterator();
         while (it.hasNext()) {
             it.next().unparse(p, indent);
+        }      
+    }
+
+    public void analysis(SymTab table) {
+        Iterator<StmtNode> it = myStmts.iterator();
+        while (it.hasNext()) {
+            it.next().analysis(table);
         }      
     }
 
@@ -187,6 +212,16 @@ class ExpListNode extends ASTnode {
         } 
     }
 
+    public void analysis(SymTab table) {
+    	Iterator<ExpNode> it = myExps.iterator();
+	if (it.hasNext()) {
+		it.next().analysis(table);
+		while (it.hasNext()) {
+			it.next().analysis(table);
+		}
+	}
+    }
+    
     // list of children (ExpNodes)
     private List<ExpNode> myExps;
 }
@@ -206,6 +241,28 @@ class FormalsListNode extends ASTnode {
         } 
     }
 
+    public void analysis(SymTab table) {
+    	Iterator<FormalDeclNode> it = myFormals.iterator();
+	if (it.hasNext()) {
+	    it.next().analysis(table);
+	    while (it.hasNext()) {
+	    	it.next().analysis(table);
+	    }
+	}
+    }
+
+    public String getTypes() {
+	String s = "";
+    	Iterator<FormalDeclNode> it = myFormals.iterator();
+    	if (it.hasNext()) {
+		s = it.next().getType();
+		while (it.hasNext()) {
+		    s = s + "," + it.next().getType();
+		}
+	}
+	return(s);
+    }
+
     // list of children (FormalDeclNodes)
     private List<FormalDeclNode> myFormals;
 }
@@ -221,6 +278,11 @@ class FnBodyNode extends ASTnode {
         myStmtList.unparse(p, indent);
     }
 
+    public void analysis(SymTab table) {
+    	myDeclList.analysis(table);
+	myStmtList.analysis(table);
+    }
+
     // two children
     private DeclListNode myDeclList;
     private StmtListNode myStmtList;
@@ -232,6 +294,7 @@ class FnBodyNode extends ASTnode {
 // **********************************************************************
 
 abstract class DeclNode extends ASTnode {
+	abstract public void analysis(SymTab table);
 }
 
 class VarDeclNode extends DeclNode {
@@ -247,6 +310,16 @@ class VarDeclNode extends DeclNode {
         p.print(" ");
         myId.unparse(p, 0);
         p.println(";");
+    }
+
+    public void analysis(SymTab table) {
+        if (myType.getType() == "void") {
+		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(),
+				"Non-function declared void");
+		ErrMsg.setAbort();
+	}
+
+	myId.analysis(table, myType.getType());
     }
 
     // three children
@@ -280,6 +353,19 @@ class FnDeclNode extends DeclNode {
         p.println("}\n");
     }
 
+    public void analysis(SymTab table) {
+	String s = myFormalsList.getTypes();
+	s = s + "->" + myType.getType();
+	myId.analysis(table, s);
+	table.addScope();
+	myFormalsList.analysis(table);
+	myBody.analysis(table);
+    	try {
+		table.removeScope();
+    	} catch(SymTabEmptyException ex) {
+	}
+    }
+
     // 4 children
     private TypeNode myType;
     private IdNode myId;
@@ -297,6 +383,20 @@ class FormalDeclNode extends DeclNode {
         myType.unparse(p, 0);
         p.print(" ");
         myId.unparse(p, 0);
+    }
+    
+    public void analysis(SymTab table) {
+        if (myType.getType() == "void") {
+                ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(),
+                                "Non-function declared void");
+        	ErrMsg.setAbort();
+	}
+
+        myId.analysis(table, myType.getType());
+    }
+    
+    public String getType() {
+    	return(myType.getType());
     }
 
     // two children
@@ -319,6 +419,9 @@ class RecordDeclNode extends DeclNode {
         doIndent(p, indent);
         p.println(");\n");
     }
+    
+    public void analysis(SymTab table) {
+    }
 
     // two children
     private IdNode myId;
@@ -330,6 +433,7 @@ class RecordDeclNode extends DeclNode {
 // **********************************************************************
 
 abstract class TypeNode extends ASTnode {
+    abstract public String getType();
 }
 
 class BoolNode extends TypeNode {
@@ -338,6 +442,10 @@ class BoolNode extends TypeNode {
 
     public void unparse(PrintWriter p, int indent) {
         p.print("boolean");
+    }
+
+    public String getType() {
+    	return("boolean");
     }
 }
 
@@ -348,6 +456,10 @@ class IntNode extends TypeNode {
     public void unparse(PrintWriter p, int indent) {
         p.print("integer");
     }
+
+    public String getType() {
+    	return("integer");
+    }
 }
 
 class VoidNode extends TypeNode {
@@ -356,6 +468,10 @@ class VoidNode extends TypeNode {
 
     public void unparse(PrintWriter p, int indent) {
         p.print("void");
+    }
+
+    public String getType() {
+    	return("void");
     }
 }
 
@@ -368,6 +484,10 @@ class RecordNode extends TypeNode {
         p.print("record ");
         myId.unparse(p, 0);
     }
+
+    public String getType() {
+    	return("record");
+    }
     
     // one child
     private IdNode myId;
@@ -378,6 +498,7 @@ class RecordNode extends TypeNode {
 // **********************************************************************
 
 abstract class StmtNode extends ASTnode {
+    abstract public void analysis(SymTab table);
 }
 
 class AssignStmtNode extends StmtNode {
@@ -389,6 +510,10 @@ class AssignStmtNode extends StmtNode {
         doIndent(p, indent);
         myAssign.unparse(p, -1); // no parentheses
         p.println(";");
+    }
+    
+    public void analysis(SymTab table) {
+    	myAssign.analysis(table);
     }
 
     // one child
@@ -404,6 +529,10 @@ class PostIncStmtNode extends StmtNode {
         doIndent(p, indent);
         myExp.unparse(p, 0);
         p.println("++;");
+    }
+    
+    public void analysis(SymTab table) { 
+    	myExp.analysis(table);
     }
 
     // one child
@@ -421,6 +550,10 @@ class PostDecStmtNode extends StmtNode {
         p.println("--;");
     }
 
+    public void analysis(SymTab table) { 
+    	myExp.analysis(table);
+    }
+    
     // one child
     private ExpNode myExp;
 }
@@ -441,6 +574,18 @@ class IfStmtNode extends StmtNode {
         myStmtList.unparse(p, indent+4);
         doIndent(p, indent);
         p.println("}");        
+    }
+    
+    public void analysis(SymTab table) { 
+    	myExp.analysis(table);
+
+	table.addScope();
+	myDeclList.analysis(table);
+	myStmtList.analysis(table);
+	try {
+		table.removeScope();
+    	} catch(SymTabEmptyException ex) {
+	}
     }
 
     // three children
@@ -477,6 +622,25 @@ class IfElseStmtNode extends StmtNode {
         p.println("}"); 
     }
 
+    public void analysis(SymTab table) { 
+    	myExp.analysis(table);
+	
+	table.addScope();
+	myThenDeclList.analysis(table);
+	myThenStmtList.analysis(table);
+	try {
+		table.removeScope();
+	} catch(SymTabEmptyException ex) {
+	}
+	table.addScope();
+	myElseDeclList.analysis(table);
+	myElseStmtList.analysis(table);
+	try {
+		table.removeScope();
+	} catch(SymTabEmptyException ex) {
+	}
+    }
+
     // five children
     private ExpNode myExp;
     private DeclListNode myThenDeclList;
@@ -503,6 +667,18 @@ class WhileStmtNode extends StmtNode {
         p.println("}");
     }
 
+    public void analysis(SymTab table) { 
+	myExp.analysis(table);
+
+        table.addScope();
+        myDeclList.analysis(table);
+        myStmtList.analysis(table);
+        try {
+		table.removeScope();
+	} catch(SymTabEmptyException ex) {
+	}
+    }
+
     // three children
     private ExpNode myExp;
     private DeclListNode myDeclList;
@@ -520,6 +696,10 @@ class ReadStmtNode extends StmtNode {
         myExp.unparse(p, 0);
         p.println(";");
     }
+    
+    public void analysis(SymTab table) {
+    	myExp.analysis(table);
+    }
 
     // one child (actually can only be an IdNode or an ArrayExpNode)
     private ExpNode myExp;
@@ -536,6 +716,10 @@ class WriteStmtNode extends StmtNode {
         myExp.unparse(p, 0);
         p.println(";");
     }
+	
+    public void analysis(SymTab table) {
+        myExp.analysis(table);
+    }
 
     // one child
     private ExpNode myExp;
@@ -550,6 +734,10 @@ class CallStmtNode extends StmtNode {
         doIndent(p, indent);
         myCall.unparse(p, indent);
         p.println(";");
+    }
+    
+    public void analysis(SymTab table) {
+        myCall.analysis(table);
     }
 
     // one child
@@ -570,7 +758,11 @@ class ReturnStmtNode extends StmtNode {
         }
         p.println(";");
     }
-
+    
+    public void analysis(SymTab table) {
+        myExp.analysis(table);
+    }
+    
     // one child
     private ExpNode myExp; // possibly null
 }
@@ -580,6 +772,7 @@ class ReturnStmtNode extends StmtNode {
 // **********************************************************************
 
 abstract class ExpNode extends ASTnode {
+    abstract public void analysis(SymTab table);
 }
 
 class TrueNode extends ExpNode {
@@ -592,6 +785,8 @@ class TrueNode extends ExpNode {
         p.print("true");
     }
 
+    public void analysis(SymTab table) {}
+    
     private int myLineNum;
     private int myCharNum;
 }
@@ -606,6 +801,8 @@ class FalseNode extends ExpNode {
         p.print("false");
     }
 
+    public void analysis(SymTab table) {}
+    
     private int myLineNum;
     private int myCharNum;
 }
@@ -619,8 +816,60 @@ class IdNode extends ExpNode {
 
     public void unparse(PrintWriter p, int indent) {
         p.print(myStrVal);
+	if (isDecl == false) {
+		p.print("[" + mySym.getType() + "]");
+    
+	}
     }
 
+    public int getCharNum() {
+    	return(myCharNum);
+    }
+
+    public int getLineNum() {
+    	return(myLineNum);
+    }
+
+    public String getName() {
+    	return(myStrVal);
+    }
+   
+    //overloaded analysis method for net new declarations 
+    public void analysis(SymTab table, String type) {
+    	//create a new Sym and place it in the table, throwing an error
+	//if it already exists in our scope
+	Sym S = new Sym(type);
+	try {
+		table.addDecl(myStrVal, S);
+	} catch (SymDuplicationException ex) {
+		ErrMsg.fatal(myLineNum, myCharNum, 
+				"Identifier multiply-declared");
+	} catch (SymTabEmptyException ex) {
+		ErrMsg.warn(myLineNum, myCharNum,
+				"Empty SymTab");
+	}
+	mySym = S;
+	isDecl = true;
+    }
+    
+    //method to find an existing Sym
+    public void analysis(SymTab table) {
+        //find the nearest Sym and thrown an error if none exists	    
+    	try {
+		Sym S = table.lookupGlobal(myStrVal);
+    		if (S == null) {
+			ErrMsg.fatal(myLineNum, myCharNum,
+					"Identifier undeclared");
+			ErrMsg.setAbort();
+		}
+		mySym = S;
+		isDecl = false;
+	} catch(SymTabEmptyException ex) {}
+    
+    }
+    
+    private boolean isDecl;
+    private Sym mySym;
     private int myLineNum;
     private int myCharNum;
     private String myStrVal;
@@ -637,6 +886,8 @@ class IntLitNode extends ExpNode {
         p.print(myIntVal);
     }
 
+    public void analysis(SymTab table) {}
+    
     private int myLineNum;
     private int myCharNum;
     private int myIntVal;
@@ -653,6 +904,8 @@ class StringLitNode extends ExpNode {
         p.print(myStrVal);
     }
 
+    public void analysis(SymTab table) {}
+    
     private int myLineNum;
     private int myCharNum;
     private String myStrVal;
@@ -672,6 +925,8 @@ class DotAccessExpNode extends ExpNode {
         myId.unparse(p, 0);
     }
 
+    public void analysis(SymTab table) {}
+    
     // two children
     private ExpNode myLoc;    
     private IdNode myId;
@@ -689,8 +944,13 @@ class AssignExpNode extends ExpNode {
         p.print(" = ");
         myExp.unparse(p, 0);
         if (indent != -1)  p.print(")");       
-    }
+    } 
 
+    public void analysis(SymTab table) {
+    	myLhs.analysis(table);
+	myExp.analysis(table);
+    }
+    
     // two children
     private ExpNode myLhs;
     private ExpNode myExp;
@@ -714,6 +974,11 @@ class CallExpNode extends ExpNode {
             myExpList.unparse(p, 0);
         }
         p.print(")");       
+    }
+   
+    public void analysis(SymTab table) {
+	myId.analysis(table); 
+	myExpList.analysis(table);
     }
 
     // two children
@@ -755,6 +1020,10 @@ class UnaryMinusNode extends UnaryExpNode {
         myExp.unparse(p, 0);
         p.print(")");
     }
+
+    public void analysis(SymTab table) {
+    	myExp.analysis(table);
+    }
 }
 
 class NotNode extends UnaryExpNode {
@@ -766,6 +1035,10 @@ class NotNode extends UnaryExpNode {
         p.print("(\\");
         myExp.unparse(p, 0);
         p.print(")");
+    }
+
+    public void analysis(SymTab table) {
+    	myExp.analysis(table);
     }
 }
 
@@ -785,6 +1058,11 @@ class PlusNode extends BinaryExpNode {
         myExp2.unparse(p, 0);
         p.print(")");
     }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
+    }
 }
 
 class MinusNode extends BinaryExpNode {
@@ -798,6 +1076,11 @@ class MinusNode extends BinaryExpNode {
         p.print(" - ");
         myExp2.unparse(p, 0);
         p.print(")");
+    }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
     }
 }
 
@@ -813,6 +1096,11 @@ class TimesNode extends BinaryExpNode {
         myExp2.unparse(p, 0);
         p.print(")");
     }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
+    }
 }
 
 class DivideNode extends BinaryExpNode {
@@ -826,6 +1114,11 @@ class DivideNode extends BinaryExpNode {
         p.print(" / ");
         myExp2.unparse(p, 0);
         p.print(")");
+    }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
     }
 }
 
@@ -841,6 +1134,11 @@ class EqualsNode extends BinaryExpNode {
         myExp2.unparse(p, 0);
         p.print(")");
     }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
+    }
 }
 
 class NotEqualsNode extends BinaryExpNode {
@@ -854,6 +1152,11 @@ class NotEqualsNode extends BinaryExpNode {
         p.print(" \\= ");
         myExp2.unparse(p, 0);
         p.print(")");
+    }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
     }
 }
 
@@ -869,6 +1172,11 @@ class LessNode extends BinaryExpNode {
         myExp2.unparse(p, 0);
         p.print(")");
     }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
+    }
 }
 
 class LessEqNode extends BinaryExpNode {
@@ -882,6 +1190,11 @@ class LessEqNode extends BinaryExpNode {
         p.print(" <= ");
         myExp2.unparse(p, 0);
         p.print(")");
+    }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
     }
 }
 
@@ -897,6 +1210,11 @@ class GreaterNode extends BinaryExpNode {
         myExp2.unparse(p, 0);
         p.print(")");
     }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
+    }
 }
 
 class GreaterEqNode extends BinaryExpNode {
@@ -910,6 +1228,11 @@ class GreaterEqNode extends BinaryExpNode {
         p.print(" >= ");
         myExp2.unparse(p, 0);
         p.print(")");
+    }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
     }
 }
 
@@ -925,6 +1248,11 @@ class AndNode extends BinaryExpNode {
         myExp2.unparse(p, 0);
         p.print(")");
     }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
+    }
 }
 
 class OrNode extends BinaryExpNode {
@@ -938,5 +1266,10 @@ class OrNode extends BinaryExpNode {
         p.print(" || ");
         myExp2.unparse(p, 0);
         p.print(")");
+    }
+
+    public void analysis(SymTab table) {
+    	myExp1.analysis(table);
+	myExp2.analysis(table);
     }
 }
