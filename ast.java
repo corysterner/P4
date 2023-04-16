@@ -424,7 +424,7 @@ class RecordDeclNode extends DeclNode {
     }
     
     public void analysis(SymTab table) {
-    	myId.analysis(table,"record","Zeit Kellet");
+    	myId.recordAnalysis(table);;
     	myDeclList.analysis(myId.getRecordSymTab());
     }
 
@@ -824,7 +824,12 @@ class IdNode extends ExpNode {
     public void unparse(PrintWriter p, int indent) {
         p.print(myStrVal);
 	if (isDecl == false) {
-		p.print("[" + mySym.getType() + "]");
+		if (mySym.getType() == "record") {
+			p.print("[" + mySym.getName() + "]");
+		}
+		else {
+			p.print("[" + mySym.getType() + "]");
+		}
     
 	}
     }
@@ -846,13 +851,11 @@ class IdNode extends ExpNode {
     }
     
     //overloaded analysis method for net new record declarations 
-    public void analysis(SymTab table, String type, String name) {
+    public void recordAnalysis(SymTab table) {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
-    name = "temp";
-    type = "record";
     
-    Sym S = new Sym(name, type);
+    Sym S = new Sym("record", myStrVal);
     
 	try {
 		table.addDecl(myStrVal, S);

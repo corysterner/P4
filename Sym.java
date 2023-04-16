@@ -24,5 +24,9 @@ public class Sym {
 	public SymTab getTable() {
 		return table;
 	}
+	
+	public String getName() {
+		return name;
+	}
 }
 
