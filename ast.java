@@ -156,7 +156,8 @@ class DeclListNode extends ASTnode {
             System.exit(-1);
         }
     }
-
+    
+    //Analysis for non-record declarations
     public void analysis(SymTab table) {
         Iterator it = myDecls.iterator();
 	try {
@@ -168,6 +169,8 @@ class DeclListNode extends ASTnode {
             System.exit(-1);
 	}
     }
+    
+    
 
     // list of children (DeclNodes)
     private List<DeclNode> myDecls;
@@ -422,7 +425,8 @@ class RecordDeclNode extends DeclNode {
     
     public void analysis(SymTab table) {
     	myId.analysis(table,"record");
-    	myDeclList.analysis(myId.getRecordSymTable());
+    	RecordDefSym S = myId.getSym();
+    	myDeclList.analysis(S.getTable());
     }
 
     // two children
