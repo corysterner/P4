@@ -1,6 +1,27 @@
 integer f(integer x, boolean b) {}
-integer y; 
+
+
+
+record Rec(
+	integer a;
+	boolean a;
+	integer y;
+);
+boolean Rec;
+
+
+
+
+integer y;
 void y;  
+record y(
+	integer a;
+	boolean a;
+);
+
+
+
+
 void g() {
     integer a; 
     integer y;
