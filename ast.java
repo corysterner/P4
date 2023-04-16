@@ -966,7 +966,6 @@ class DotAccessExpNode extends ExpNode {
     // two children
     private ExpNode myLoc;    
     private IdNode myId;
-    private 
 }
 
 class AssignExpNode extends ExpNode {
