@@ -17,12 +17,10 @@ public class Sym {
 class RecordDefSym extends Sym{
 	private String name;
 	private SymTab table;
-	private int	size;
 	
-	public RecordDefSym(String name, int size) {
+	public RecordDefSym(String name) {
 		this.name = name;
 		this.table = new SymTab();
-		this.size = size;
 	}
 	
 	public String getType() {
@@ -33,11 +31,4 @@ class RecordDefSym extends Sym{
 		return table;
 	}
 	
-	public int getSize() {
-		return size;
-	}
-	
-	public void setTable(SymTab table) {
-		this.table = table;
-	}
 }

@@ -849,7 +849,7 @@ class IdNode extends ExpNode {
     public void analysis(SymTab table, String name, int size) {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
-    RecordDefSym S = new RecordDefSym(name, size);
+    RecordDefSym S = new RecordDefSym(name);
     
 	try {
 		table.addDecl(myStrVal, S);
