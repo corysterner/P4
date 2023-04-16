@@ -425,8 +425,7 @@ class RecordDeclNode extends DeclNode {
     
     public void analysis(SymTab table) {
     	myId.analysis(table,"record");
-    	RecordDefSym S = myId.getSym();
-    	myDeclList.analysis(S.getTable());
+    	myDeclList.analysis(myId.getRecordSymTab());
     }
 
     // two children
@@ -857,20 +856,35 @@ class IdNode extends ExpNode {
     	return(myStrVal);
     }
     
-    public SymTab getSym() {
-    	return (mySym);
+    public RecordDefSym getRecordSymTab() {
+    	return (myRecordSymTab);
+    }
+    
+    //overloaded analysis method for net new record declarations 
+    public void analysis(SymTab table, String name, int size) {
+    	//create a new Sym and place it in the table, throwing an error
+	//if it already exists in our scope
+    RecordDefSym S = new RecordDefSym(name, size);
+    
+	try {
+		table.addDecl(myStrVal, S);
+	} catch (SymDuplicationException ex) {
+		ErrMsg.fatal(myLineNum, myCharNum, 
+				"Identifier multiply-declared");
+	} catch (SymTabEmptyException ex) {
+		ErrMsg.warn(myLineNum, myCharNum,
+				"Empty SymTab");
+	}
+	myRecordSymTab = S.getTable();
+	mySym = S;
+	isDecl = true;
     }
 
     //overloaded analysis method for net new declarations 
     public void analysis(SymTab table, String type) {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
-    if (type == "record") {
-    	RecordDefSym S = new RecordDefSym(type, 0);
-    }
-    else {
-    	Sym S = new Sym(type);
-    }
+    Sym S = new Sym(type);
     
 	try {
 		table.addDecl(myStrVal, S);
@@ -903,6 +917,7 @@ class IdNode extends ExpNode {
     
     private boolean isDecl;
     private Sym mySym;
+    private SymTab myRecordSymTab;
     private int myLineNum;
     private int myCharNum;
     private String myStrVal;
