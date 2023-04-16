@@ -494,21 +494,6 @@ class RecordNode extends TypeNode {
     	return("record");
     }
     
-    public void analysis(SymTab table) {
-    	Sym S = new Sym(type);
-    	try {
-    		table.addDecl(myStrVal, S);
-    	} catch (SymDuplicationException ex) {
-    		ErrMsg.fatal(myLineNum, myCharNum, 
-    				"Identifier multiply-declared");
-    	} catch (SymTabEmptyException ex) {
-    		ErrMsg.warn(myLineNum, myCharNum,
-    				"Empty SymTab");
-    	}
-    	mySym = S;
-    	isDecl = true;
-    }
-    
     // one child
     private IdNode myId;
     private boolean isDecl;
@@ -856,7 +841,7 @@ class IdNode extends ExpNode {
     	return(myStrVal);
     }
     
-    public RecordDefSym getRecordSymTab() {
+    public SymTab getRecordSymTab() {
     	return (myRecordSymTab);
     }
     
