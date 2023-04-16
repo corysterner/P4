@@ -15,18 +15,18 @@ public class Sym {
 	
 }
 class RecordDefSym extends Sym{
-	private String type;
+	private String name;
 	private SymTab table;
 	private int	size;
 	
-	public RecordDefSym(String type, int size) {
-		this.type = type;
+	public RecordDefSym(String name, int size) {
+		this.name = name;
 		this.table = new SymTab();
 		this.size = size;
 	}
 	
 	public String getType() {
-		return type;
+		return name;
 	}
 	
 	public SymTab getTable() {
@@ -35,5 +35,9 @@ class RecordDefSym extends Sym{
 	
 	public int getSize() {
 		return size;
+	}
+	
+	public void setTable(SymTab table) {
+		this.table = table;
 	}
 }

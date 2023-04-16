@@ -853,21 +853,21 @@ class IdNode extends ExpNode {
     	return(myStrVal);
     }
     
-    public SymTab getRecordSymTable() {
-    	return (mySym.getTable());
+    public SymTab getSym() {
+    	return (mySym);
     }
-   
+
     //overloaded analysis method for net new declarations 
     public void analysis(SymTab table, String type) {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
-	if (type = "record") {
-		Sym S = new RecordDefSym(type, 0);
-	}
-	else {
-		Sym S = new Sym(type);
-	}
-	
+    if (type == "record") {
+    	RecordDefSym S = new RecordDefSym(type, 0);
+    }
+    else {
+    	Sym S = new Sym(type);
+    }
+    
 	try {
 		table.addDecl(myStrVal, S);
 	} catch (SymDuplicationException ex) {
