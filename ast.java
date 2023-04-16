@@ -852,7 +852,7 @@ class IdNode extends ExpNode {
     name = "temp";
     type = "record";
     
-    RecordDefSym S = new RecordDefSym(name, type);
+    Sym S = new RecordDefSym(name, type);
     
 	try {
 		table.addDecl(myStrVal, S);
