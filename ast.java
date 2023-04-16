@@ -131,8 +131,8 @@ class ProgramNode extends ASTnode {
     }
 
     public void analysis() {
-	SymTab table = new SymTab();
-	table.addScope();
+    	SymTab table = new SymTab();
+		table.addScope();
     	myDeclList.analysis(table);
     }
 
@@ -314,12 +314,12 @@ class VarDeclNode extends DeclNode {
 
     public void analysis(SymTab table) {
         if (myType.getType() == "void") {
-		ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(),
+        	ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(),
 				"Non-function declared void");
-		ErrMsg.setAbort();
-	}
+			ErrMsg.setAbort();
+        }
 
-	myId.analysis(table, myType.getType());
+        myId.analysis(table, myType.getType());
     }
 
     // three children
@@ -421,6 +421,8 @@ class RecordDeclNode extends DeclNode {
     }
     
     public void analysis(SymTab table) {
+    	myId.analysis(table,"record");
+    	myDeclList.analysis(myId.getRecordSymTable());
     }
 
     // two children
@@ -489,8 +491,25 @@ class RecordNode extends TypeNode {
     	return("record");
     }
     
+    public void analysis(SymTab table) {
+    	Sym S = new Sym(type);
+    	try {
+    		table.addDecl(myStrVal, S);
+    	} catch (SymDuplicationException ex) {
+    		ErrMsg.fatal(myLineNum, myCharNum, 
+    				"Identifier multiply-declared");
+    	} catch (SymTabEmptyException ex) {
+    		ErrMsg.warn(myLineNum, myCharNum,
+    				"Empty SymTab");
+    	}
+    	mySym = S;
+    	isDecl = true;
+    }
+    
     // one child
     private IdNode myId;
+    private boolean isDecl;
+    private Sym mySym;
 }
 
 // **********************************************************************
@@ -833,12 +852,22 @@ class IdNode extends ExpNode {
     public String getName() {
     	return(myStrVal);
     }
+    
+    public SymTab getRecordSymTable() {
+    	return (mySym.getTable());
+    }
    
     //overloaded analysis method for net new declarations 
     public void analysis(SymTab table, String type) {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
-	Sym S = new Sym(type);
+	if (type = "record") {
+		Sym S = new RecordDefSym(type, 0);
+	}
+	else {
+		Sym S = new Sym(type);
+	}
+	
 	try {
 		table.addDecl(myStrVal, S);
 	} catch (SymDuplicationException ex) {
@@ -924,12 +953,16 @@ class DotAccessExpNode extends ExpNode {
         p.print(").");
         myId.unparse(p, 0);
     }
-
-    public void analysis(SymTab table) {}
+    
+    //Method to check if 
+    public void analysis(SymTab table) {
+    	
+    }
     
     // two children
     private ExpNode myLoc;    
     private IdNode myId;
+    private 
 }
 
 class AssignExpNode extends ExpNode {
@@ -948,7 +981,7 @@ class AssignExpNode extends ExpNode {
 
     public void analysis(SymTab table) {
     	myLhs.analysis(table);
-	myExp.analysis(table);
+    	myExp.analysis(table);
     }
     
     // two children
