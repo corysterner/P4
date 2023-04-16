@@ -16,10 +16,12 @@ public class Sym {
 }
 class RecordDefSym extends Sym{
 	private String name;
+	private String type;
 	private SymTab table;
 	
-	public RecordDefSym(String name) {
+	public RecordDefSym(String type, String name) {
 		this.name = name;
+		this.type = type;
 		this.table = new SymTab();
 	}
 	
