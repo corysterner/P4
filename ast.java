@@ -323,8 +323,11 @@ class VarDeclNode extends DeclNode {
         if (myType instanceof RecordNode) {
         	RecordNode record = (RecordNode) myType;
         	record.analysis(table);
+        	myId.recordDeclarationAnalysis(table, record.getName())
         }
-        myId.analysis(table, myType.getType());
+        else { 
+        	myId.analysis(table, myType.getType());
+        }
     }
 
     // three children
@@ -426,7 +429,7 @@ class RecordDeclNode extends DeclNode {
     }
     
     public void analysis(SymTab table) {
-    	if (myId.recordAnalysis(table)) {
+    	if (myId.recordDefDeclAnalysis(table)) {
     		myDeclList.analysis(myId.getRecordSymTab());
     	}
     }
@@ -497,8 +500,11 @@ class RecordNode extends TypeNode {
     	return("record");
     }
     
+    public String getName() {
+    	return(myId.getName());
+    }
+    
     public void analysis(SymTab table) {
-    	myId.analysis(table);
     }
     
     // one child
@@ -865,12 +871,43 @@ class IdNode extends ExpNode {
     	return (mySym);
     }
     
-    //overloaded analysis method for net new record declarations 
-    public boolean recordAnalysis(SymTab table) {
+    //Record declaration analysis
+    public boolean recordDeclarationAnalysis(SymTab table, String name){
+        
+        Sym recordDef = table.lookupGlobal(name);
+        if (recordDef == null || recordDef.getType() != "recordDef") {
+    		ErrMsg.fatal(myLineNum, myCharNum, 
+    				"Name of record type invalid");
+    		ErrMsg.setAbort();
+    		return false;
+        }
+        
+        Sym S = new Sym("record");
+        
+    	try {
+    		table.addDecl(myStrVal, S);
+    	} catch (SymDuplicationException ex) {
+    		ErrMsg.fatal(myLineNum, myCharNum, 
+    				"Identifier multiply-declared");
+    		ErrMsg.setAbort();
+    		return false;
+    	} catch (SymTabEmptyException ex) {
+    		ErrMsg.warn(myLineNum, myCharNum,
+    				"Empty SymTab");
+    	}
+    	
+    	myRecordSymTab = recordDef.getTable();
+    	mySym = S;
+    	isDecl = true;
+    	return true;
+    }
+    
+    //Name analysis method for net new record type declarations 
+    public boolean recordDefDeclAnalysis(SymTab table) {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
     
-    Sym S = new Sym("record", myStrVal, table);
+    Sym S = new Sym("recordDef", myStrVal, table);
     
 	try {
 		table.addDecl(myStrVal, S);
@@ -889,6 +926,7 @@ class IdNode extends ExpNode {
 	return true;
     }
     
+    //Lookup if Id is in the records declaration scope
     public boolean isIdInRecord(SymTab table) {
         //Look for the Sym and thrown an error if none exists	    
     	try {
