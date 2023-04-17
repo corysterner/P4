@@ -505,7 +505,6 @@ class RecordNode extends TypeNode {
     }
     
     public void analysis(SymTab table) {
-    	myId.analysis(null);
     }
     
     // one child
@@ -995,13 +994,6 @@ class IdNode extends ExpNode {
 		}
     }
     
-    //Method to declare an id node for a record identifier
-    public void analysis() {
-    	myRecordSymTab = new SymTab();
-    	mySym = new Sym("recordNode");
-    	isDecl = true;
-    }
-    
     //method to find an existing Sym
     public boolean locAnalysis(SymTab table) {
         //find the nearest Sym and thrown an error if none exists	    
@@ -1020,7 +1012,10 @@ class IdNode extends ExpNode {
 	}
     return true;
     }
-    
+    public void recordNodeAnalysis() {
+    	mySym = new Sym ("recordNode");
+    	isDecl = true;
+    }
     public void logError(String errorText) {
     	ErrMsg.fatal(myLineNum, myCharNum, errorText);
     	ErrMsg.setAbort();
