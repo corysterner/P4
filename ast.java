@@ -919,6 +919,21 @@ class IdNode extends ExpNode {
 	isDecl = true;
     }
     
+    public void analysis(SymTab table) {
+        //find the nearest Sym and thrown an error if none exists	    
+    	try {
+		Sym S = table.lookupGlobal(myStrVal);
+    		if (S == null) {
+			ErrMsg.fatal(myLineNum, myCharNum,
+					"Identifier undeclared");
+			ErrMsg.setAbort();
+		}
+		mySym = S;
+		isDecl = false;
+		} catch(SymTabEmptyException ex) {
+		}
+    }
+    
     //method to find an existing Sym
     public boolean analysis(SymTab table) {
         //find the nearest Sym and thrown an error if none exists	    
@@ -1019,10 +1034,10 @@ class DotAccessExpNode extends ExpNode {
 				return;
 			}
 			
-			myParentRecordTab = myId.getSym();
+			myParentRecord = myId.getSym();
 		}
 		else if (myLoc instanceof DotAccessExpNode) {
-			DotNode lhsId = (DotAccessExpNode) myLoc;
+			DotAccessExpNode lhsId = (DotAccessExpNode) myLoc;
 //			if (lhsId.getType() != "record") {
 //				lhsId.logError("Dot-access of non-record type");
 //				return;
