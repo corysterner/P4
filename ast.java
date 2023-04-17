@@ -984,11 +984,12 @@ class DotAccessExpNode extends ExpNode {
 			if (lhsId.getType() != "record") {
 				lhsId.logError("Dot-access of non-record type");
 			}
+			
 		}
     }
     
-    public void getType() {
-    	return ();
+    public String getType() {
+    	return (myParentRecord.getType());
     }
     
     
