@@ -979,7 +979,7 @@ class DotAccessExpNode extends ExpNode {
     			ErrMsg.setAbort();
     		}
     	}
-    	catch{
+    	catch (Exception e){
     			ErrMsg.fatal(myLineNum, myCharNum,
     					"Dot-access of non-record type");
     			ErrMsg.setAbort();
