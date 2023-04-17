@@ -323,7 +323,7 @@ class VarDeclNode extends DeclNode {
         if (myType instanceof RecordNode) {
         	RecordNode record = (RecordNode) myType;
         	record.analysis(table);
-        	myId.recordDeclarationAnalysis(table, record.getName())
+        	myId.recordDeclarationAnalysis(table, record.getName());
         }
         else { 
         	myId.analysis(table, myType.getType());
@@ -1083,15 +1083,15 @@ class DotAccessExpNode extends ExpNode {
 			
 			//Ensure the RHS ID is declared in the record def
 			SymTab recordTable = lhsId.getRecordSymTab();
-			System.out.println(lhsId.getName() + " " + lhsId.getType());
-//			if (recordTable == null) {
-//				Sym S = lhsId.getSym();
-//				recordTable = S.getTable();
-//				recordTable.print();
-//			}
-//			if (!myId.isIdInRecord(recordTable)) {
-//				return;
-//			}
+
+			if (recordTable == null) {
+				Sym S = lhsId.getSym();
+				recordTable = S.getTable();
+				recordTable.print();
+			}
+			if (!myId.isIdInRecord(recordTable)) {
+				return;
+			}
 			
 			myParentRecord = myId.getSym();
 		}
