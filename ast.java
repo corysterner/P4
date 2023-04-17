@@ -1050,9 +1050,9 @@ class DotAccessExpNode extends ExpNode {
 				recordTable = S.getTable();
 				recordTable.print();
 			}
-			if (!myId.isIdInRecord(recordTable)) {
-				return;
-			}
+//			if (!myId.isIdInRecord(recordTable)) {
+//				return;
+//			}
 			
 			myParentRecord = myId.getSym();
 		}
