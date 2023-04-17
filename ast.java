@@ -170,8 +170,6 @@ class DeclListNode extends ASTnode {
 	}
     }
     
-    
-
     // list of children (DeclNodes)
     private List<DeclNode> myDecls;
 }
@@ -872,7 +870,7 @@ class IdNode extends ExpNode {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
     
-    Sym S = new Sym("record", myStrVal);
+    Sym S = new Sym("record", myStrVal, table);
     
 	try {
 		table.addDecl(myStrVal, S);

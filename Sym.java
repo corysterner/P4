@@ -7,10 +7,11 @@ public class Sym {
 		this.type = type;
 	}
 	
-	public Sym(String type, String name) {
+	public Sym(String type, String name, SymTab table) {
 		this.name = name;
 		this.type = type;
-		this.table = new SymTab();
+		table.addScope();
+		this.table = table;
 	}
 	
 	public String getType() {
