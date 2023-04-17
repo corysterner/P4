@@ -874,7 +874,7 @@ class IdNode extends ExpNode {
     //Record declaration analysis
     public boolean recordDeclarationAnalysis(SymTab table, String name){
     	//Look for the record type declaration
-    	Sym recordDef = new Sym();
+    	Sym recordDef = new Sym(null);
     	try {
         recordDef = table.lookupGlobal(name);
         
