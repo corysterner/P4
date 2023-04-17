@@ -947,6 +947,7 @@ class IdNode extends ExpNode {
     		Sym S = table.lookupLocal(myStrVal);
     		if (S == null) {
     			table.print();
+    			System.out.print(myStrVal);
     			ErrMsg.fatal(myLineNum, myCharNum,
     					"Record field name invalid");
     			ErrMsg.setAbort();
