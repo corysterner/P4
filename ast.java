@@ -873,7 +873,9 @@ class IdNode extends ExpNode {
     
     //Record declaration analysis
     public boolean recordDeclarationAnalysis(SymTab table, String name){
-        try {
+        Sym recordDef;
+        
+    	try {
         Sym recordDef = table.lookupGlobal(name);
         } catch (SymTabEmptyException ex) {
     		ErrMsg.warn(myLineNum, myCharNum,
