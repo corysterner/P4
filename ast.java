@@ -896,7 +896,7 @@ class IdNode extends ExpNode {
     	}
 
         
-        Sym S = new Sym("record");
+        Sym S = new Sym("record", name, recordDef.getTable());
         
     	try {
     		table.addDecl(myStrVal, S);
