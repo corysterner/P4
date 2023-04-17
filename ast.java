@@ -1006,6 +1006,7 @@ class IdNode extends ExpNode {
 			ErrMsg.setAbort();
 			return false;
 		}
+    	
 		mySym = S;
 		isDecl = false;
 	} catch(SymTabEmptyException ex) {
@@ -1099,7 +1100,7 @@ class DotAccessExpNode extends ExpNode {
 			}
 			
 			//Ensure the RHS ID is declared in the record def
-			SymTab recordTable = lhsId.getRecordSymTab();
+			SymTab recordTable = lhsId.getSym().getTable();
 			if (recordTable == null) {
 				return;
 			}
