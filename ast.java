@@ -899,7 +899,6 @@ class IdNode extends ExpNode {
     	}
     return true;
     }
-    }
 
     //overloaded analysis method for net new declarations 
     public void analysis(SymTab table, String type) {
