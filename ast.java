@@ -852,7 +852,11 @@ class IdNode extends ExpNode {
     }
     
     public String getType() {
-    	return mySym.getType();
+    	return (mySym.getType());
+    }
+    
+    public Sym getSym() {
+    	return (mySym);
     }
     
     //overloaded analysis method for net new record declarations 
@@ -877,6 +881,25 @@ class IdNode extends ExpNode {
 	isDecl = true;
 	return true;
     }
+    
+    public boolean isIdInRecord(SymTab table) {
+        //Look for the Sym and thrown an error if none exists	    
+    	try {
+    		Sym S = table.lookupLocal(myStrVal);
+    		if (S == null) {
+    			ErrMsg.fatal(myLineNum, myCharNum,
+    					"Record field name invalid");
+    			ErrMsg.setAbort();
+			return false;
+		}
+		mySym = S;
+		isDecl = false;
+    	} catch(SymTabEmptyException ex) {
+    		return false;
+    	}
+    return true;
+    }
+    }
 
     //overloaded analysis method for net new declarations 
     public void analysis(SymTab table, String type) {
@@ -898,7 +921,7 @@ class IdNode extends ExpNode {
     }
     
     //method to find an existing Sym
-    public void analysis(SymTab table) {
+    public boolean analysis(SymTab table) {
         //find the nearest Sym and thrown an error if none exists	    
     	try {
 		Sym S = table.lookupGlobal(myStrVal);
@@ -906,11 +929,14 @@ class IdNode extends ExpNode {
 			ErrMsg.fatal(myLineNum, myCharNum,
 					"Identifier undeclared");
 			ErrMsg.setAbort();
+			return false;
 		}
 		mySym = S;
 		isDecl = false;
-	} catch(SymTabEmptyException ex) {}
-    
+	} catch(SymTabEmptyException ex) {
+		return false;
+	}
+    return true;
     }
     
     public void logError(String errorText) {
@@ -981,14 +1007,41 @@ class DotAccessExpNode extends ExpNode {
     public void analysis(SymTab table) {
 		if (myLoc instanceof IdNode) {
 			IdNode lhsId = (IdNode) myLoc;
-			if (lhsId.getType() != "record") {
+			if (!(lhsId.analysis(table))){
+				return;
+			}
+			else if (lhsId.getType() != "record") {
 				lhsId.logError("Dot-access of non-record type");
+				return;
 			}
 			
+			SymTab recordTable = lhsId.getRecordSymTab();
+			if (!myId.isIdInRecord(recordTable)) {
+				return;
+			}
+			
+			myParentRecordTab = myId.getSym();
+		}
+		else if (myLoc instanceof DotAccessExpNode) {
+			DotNode lhsId = (DotAccessExpNode) myLoc;
+//			if (lhsId.getType() != "record") {
+//				lhsId.logError("Dot-access of non-record type");
+//				return;
+//			}
+//			
+//			SymTab recordTable = lhsId.getRecordSymTab();
+//			if (!myId.isIdInRecord(recordTable)) {
+//				return;
+//			}
+//			
+//			myParentRecordTab = myId.getSym();
 		}
     }
     
     public String getType() {
+    	if (myParentRecord == null) {
+    		return null;
+    	}
     	return (myParentRecord.getType());
     }
     
