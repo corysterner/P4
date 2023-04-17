@@ -876,7 +876,7 @@ class IdNode extends ExpNode {
         Sym recordDef;
         
     	try {
-        Sym recordDef = table.lookupGlobal(name);
+        recordDef = table.lookupGlobal(name);
         } catch (SymTabEmptyException ex) {
     		ErrMsg.warn(myLineNum, myCharNum,
     				"Empty SymTab");
