@@ -1089,19 +1089,17 @@ class DotAccessExpNode extends ExpNode {
 			}
 			
 			//Ensure the LHS ID is a record
-			else if (lhsId.getType() != "record") {
+			if (lhsId.getType() != "record") {
 				lhsId.logError("Dot-access of non-record type");
 				return;
 			}
 			
 			//Ensure the RHS ID is declared in the record def
 			SymTab recordTable = lhsId.getRecordSymTab();
-
 			if (recordTable == null) {
-				Sym S = lhsId.getSym();
-				recordTable = S.getTable();
-				recordTable.print();
+				return;
 			}
+
 			if (!myId.isIdInRecord(recordTable)) {
 				return;
 			}
