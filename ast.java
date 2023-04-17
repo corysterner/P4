@@ -980,7 +980,7 @@ class DotAccessExpNode extends ExpNode {
     //Method to check if 
     public void analysis(SymTab table) {
 		if (myLoc instanceof IdNode) {
-			IdNode lhsId = (IdNode) lhsId;
+			IdNode lhsId = (IdNode) myLoc;
 			if (lhsId.getType() != "record") {
 				lhsId.logError("Dot-access of non-record type");
 			}
