@@ -321,7 +321,11 @@ class VarDeclNode extends DeclNode {
 				"Non-function declared void");
 			ErrMsg.setAbort();
         }
-
+        
+        if (myType instanceof RecordNode) {
+        	RecordNode record = (RecordNode) myType;
+        	record.analysis(table);
+        }
         myId.analysis(table, myType.getType());
     }
 
@@ -493,6 +497,10 @@ class RecordNode extends TypeNode {
 
     public String getType() {
     	return("record");
+    }
+    
+    public void analysis(SymTab table) {
+    	myId.analysis(table);
     }
     
     // one child
@@ -871,6 +879,7 @@ class IdNode extends ExpNode {
 	} catch (SymDuplicationException ex) {
 		ErrMsg.fatal(myLineNum, myCharNum, 
 				"Identifier multiply-declared");
+		ErrMsg.setAbort();
 		return false;
 	} catch (SymTabEmptyException ex) {
 		ErrMsg.warn(myLineNum, myCharNum,
@@ -911,6 +920,8 @@ class IdNode extends ExpNode {
 	} catch (SymDuplicationException ex) {
 		ErrMsg.fatal(myLineNum, myCharNum, 
 				"Identifier multiply-declared");
+		ErrMsg.setAbort();
+		
 	} catch (SymTabEmptyException ex) {
 		ErrMsg.warn(myLineNum, myCharNum,
 				"Empty SymTab");
