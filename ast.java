@@ -424,8 +424,9 @@ class RecordDeclNode extends DeclNode {
     }
     
     public void analysis(SymTab table) {
-    	myId.recordAnalysis(table);;
-    	myDeclList.analysis(myId.getRecordSymTab());
+    	if (myId.recordAnalysis(table)) {
+    		myDeclList.analysis(myId.getRecordSymTab());
+    	}
     }
 
     // two children
@@ -851,7 +852,7 @@ class IdNode extends ExpNode {
     }
     
     //overloaded analysis method for net new record declarations 
-    public void recordAnalysis(SymTab table) {
+    public boolean recordAnalysis(SymTab table) {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
     
@@ -862,6 +863,7 @@ class IdNode extends ExpNode {
 	} catch (SymDuplicationException ex) {
 		ErrMsg.fatal(myLineNum, myCharNum, 
 				"Identifier multiply-declared");
+		return false;
 	} catch (SymTabEmptyException ex) {
 		ErrMsg.warn(myLineNum, myCharNum,
 				"Empty SymTab");
@@ -869,6 +871,7 @@ class IdNode extends ExpNode {
 	myRecordSymTab = S.getTable();
 	mySym = S;
 	isDecl = true;
+	return true;
     }
 
     //overloaded analysis method for net new declarations 
@@ -966,7 +969,21 @@ class DotAccessExpNode extends ExpNode {
     
     //Method to check if 
     public void analysis(SymTab table) {
-    	
+    	try{
+    		if (myLoc.getType() == "record") {
+    			
+    		}
+    		else {
+    			ErrMsg.fatal(myLineNum, myCharNum,
+    					"Dot-access of non-record type");
+    			ErrMsg.setAbort();
+    		}
+    	}
+    	catch{
+    			ErrMsg.fatal(myLineNum, myCharNum,
+    					"Dot-access of non-record type");
+    			ErrMsg.setAbort();
+    	}
     }
     
     // two children
