@@ -505,6 +505,7 @@ class RecordNode extends TypeNode {
     }
     
     public void analysis(SymTab table) {
+    	myId.recordNodeAnalysis();
     }
     
     // one child
