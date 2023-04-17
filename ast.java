@@ -781,7 +781,6 @@ class ReturnStmtNode extends StmtNode {
 
 abstract class ExpNode extends ASTnode {
     abstract public void analysis(SymTab table);
-    abstract public String getType();
 }
 
 class TrueNode extends ExpNode {
@@ -795,7 +794,6 @@ class TrueNode extends ExpNode {
     }
 
     public void analysis(SymTab table) {}
-    public String getType() {return null;}
     
     private int myLineNum;
     private int myCharNum;
@@ -812,7 +810,6 @@ class FalseNode extends ExpNode {
     }
 
     public void analysis(SymTab table) {}
-    public String getType() {return null;}
     
     private int myLineNum;
     private int myCharNum;
@@ -937,7 +934,6 @@ class IntLitNode extends ExpNode {
     }
 
     public void analysis(SymTab table) {}
-    public String getType() {return null;}
     
     private int myLineNum;
     private int myCharNum;
@@ -956,7 +952,7 @@ class StringLitNode extends ExpNode {
     }
 
     public void analysis(SymTab table) {}
-    public String getType() {return null;}
+
     
     private int myLineNum;
     private int myCharNum;
