@@ -505,6 +505,7 @@ class RecordNode extends TypeNode {
     }
     
     public void analysis(SymTab table) {
+    	myId.analysis(null);
     }
     
     // one child
@@ -992,6 +993,12 @@ class IdNode extends ExpNode {
 		isDecl = false;
 		} catch(SymTabEmptyException ex) {
 		}
+    }
+    
+    //Method to declare an id node for a record identifier
+    public void analysis() {
+    	mySym = new Sym("recordNode");
+    	isDecl = true;
     }
     
     //method to find an existing Sym
