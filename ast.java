@@ -935,7 +935,7 @@ class IdNode extends ExpNode {
     }
     
     //method to find an existing Sym
-    public boolean analysis(SymTab table) {
+    public boolean locAnalysis(SymTab table) {
         //find the nearest Sym and thrown an error if none exists	    
     	try {
 		Sym S = table.lookupGlobal(myStrVal);
@@ -1021,7 +1021,7 @@ class DotAccessExpNode extends ExpNode {
     public void analysis(SymTab table) {
 		if (myLoc instanceof IdNode) {
 			IdNode lhsId = (IdNode) myLoc;
-			if (!(lhsId.analysis(table))){
+			if (!(lhsId.locAnalysis(table))){
 				return;
 			}
 			else if (lhsId.getType() != "record") {
