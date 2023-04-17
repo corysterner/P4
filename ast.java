@@ -781,6 +781,7 @@ class ReturnStmtNode extends StmtNode {
 
 abstract class ExpNode extends ASTnode {
     abstract public void analysis(SymTab table);
+    abstract public String getType();
 }
 
 class TrueNode extends ExpNode {
@@ -794,6 +795,7 @@ class TrueNode extends ExpNode {
     }
 
     public void analysis(SymTab table) {}
+    public String getType() {return null;}
     
     private int myLineNum;
     private int myCharNum;
@@ -810,6 +812,7 @@ class FalseNode extends ExpNode {
     }
 
     public void analysis(SymTab table) {}
+    public String getType() {return null;}
     
     private int myLineNum;
     private int myCharNum;
@@ -909,6 +912,11 @@ class IdNode extends ExpNode {
     
     }
     
+    public void logError(String errorText) {
+    	ErrMsg.fatal(myLineNum, myCharNum, errorText);
+    	ErrMsg.setAbort();
+    }
+    
     private boolean isDecl;
     private Sym mySym;
     private SymTab myRecordSymTab;
@@ -929,6 +937,7 @@ class IntLitNode extends ExpNode {
     }
 
     public void analysis(SymTab table) {}
+    public String getType() {return null;}
     
     private int myLineNum;
     private int myCharNum;
@@ -947,6 +956,7 @@ class StringLitNode extends ExpNode {
     }
 
     public void analysis(SymTab table) {}
+    public String getType() {return null;}
     
     private int myLineNum;
     private int myCharNum;
@@ -969,26 +979,23 @@ class DotAccessExpNode extends ExpNode {
     
     //Method to check if 
     public void analysis(SymTab table) {
-    	try{
-    		if (myLoc.getType() == "record") {
-    			
-    		}
-    		else {
-    			ErrMsg.fatal(myLineNum, myCharNum,
-    					"Dot-access of non-record type");
-    			ErrMsg.setAbort();
-    		}
-    	}
-    	catch (Exception e){
-    			ErrMsg.fatal(myLineNum, myCharNum,
-    					"Dot-access of non-record type");
-    			ErrMsg.setAbort();
-    	}
+		if (myLoc instanceof IdNode) {
+			IdNode lhsId = (IdNode) lhsId;
+			if (lhsId.getType() != "record") {
+				lhsId.logError("Dot-access of non-record type");
+			}
+		}
     }
+    
+    public void getType() {
+    	return ();
+    }
+    
     
     // two children
     private ExpNode myLoc;    
     private IdNode myId;
+    private Sym myParentRecord;
 }
 
 class AssignExpNode extends ExpNode {
@@ -1009,6 +1016,7 @@ class AssignExpNode extends ExpNode {
     	myLhs.analysis(table);
     	myExp.analysis(table);
     }
+    public String getType() {return null;}
     
     // two children
     private ExpNode myLhs;
@@ -1039,6 +1047,8 @@ class CallExpNode extends ExpNode {
 	myId.analysis(table); 
 	myExpList.analysis(table);
     }
+    
+    public String getType() {return null;}
 
     // two children
     private IdNode myId;
