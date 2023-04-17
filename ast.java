@@ -873,14 +873,9 @@ class IdNode extends ExpNode {
     
     //Record declaration analysis
     public boolean recordDeclarationAnalysis(SymTab table, String name){
-        Sym recordDef;
-        
+    	//Look for the record type declaration
     	try {
-        recordDef = table.lookupGlobal(name);
-        } catch (SymTabEmptyException ex) {
-    		ErrMsg.warn(myLineNum, myCharNum,
-    				"Empty SymTab");
-    	}
+        Sym recordDef = table.lookupGlobal(name);
         
         if (recordDef == null || recordDef.getType() != "recordDef") {
     		ErrMsg.fatal(myLineNum, myCharNum, 
@@ -888,6 +883,16 @@ class IdNode extends ExpNode {
     		ErrMsg.setAbort();
     		return false;
         }
+        
+        } catch (SymTabEmptyException ex) {
+    		ErrMsg.warn(myLineNum, myCharNum,
+    				"Empty SymTab");
+    		ErrMsg.fatal(myLineNum, myCharNum, 
+    				"Name of record type invalid");
+    		ErrMsg.setAbort();
+    		return false;
+    	}
+
         
         Sym S = new Sym("record");
         
