@@ -851,6 +851,10 @@ class IdNode extends ExpNode {
     	return (myRecordSymTab);
     }
     
+    public String getType() {
+    	return mySym.getType();
+    }
+    
     //overloaded analysis method for net new record declarations 
     public boolean recordAnalysis(SymTab table) {
     	//create a new Sym and place it in the table, throwing an error
