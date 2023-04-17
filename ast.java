@@ -997,6 +997,7 @@ class IdNode extends ExpNode {
     
     //Method to declare an id node for a record identifier
     public void analysis() {
+    	myRecordSymTab = new SymTab();
     	mySym = new Sym("recordNode");
     	isDecl = true;
     }
