@@ -1083,6 +1083,7 @@ class IdNode extends ExpNode {
     public boolean locAnalysis(SymTab table) {
         //find the nearest Sym and thrown an error if none exists	    
     	try {
+    	System.out.println(myStrVal);
 		Sym S = table.lookupGlobal(myStrVal);
     		if (S == null) {
 			ErrMsg.fatal(myLineNum, myCharNum,
@@ -1174,7 +1175,7 @@ class DotAccessExpNode extends ExpNode {
     	return myId.getSym().getTable();
     }
     
-    public IdNode getParentId() {
+    public IdNode getChildId() {
     	return myId;
     }
     
@@ -1202,6 +1203,7 @@ class DotAccessExpNode extends ExpNode {
 				return;
 			}
 			
+			myType = myId.getType();
 			
 		}
 		
@@ -1210,7 +1212,7 @@ class DotAccessExpNode extends ExpNode {
 			DotAccessExpNode lhsId = (DotAccessExpNode) myLoc;
 			
 			//Ensure that the LHS ID creates a symbol
-			if (!(lhsId.getParentId().locAnalysis(table))){
+			if (!(lhsId.getChildId().locAnalysis(table))){
 				return;
 			}
 			
@@ -1225,7 +1227,6 @@ class DotAccessExpNode extends ExpNode {
 				return;
 			}
 			
-			
 		}
 		
     }
@@ -1235,6 +1236,7 @@ class DotAccessExpNode extends ExpNode {
     // two children
     private ExpNode myLoc;    
     private IdNode myId;
+    private String type;
 }
 
 class AssignExpNode extends ExpNode {
