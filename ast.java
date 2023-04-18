@@ -923,6 +923,7 @@ class IdNode extends ExpNode {
     SymTab recordTable = table;
     recordTable.addScope();
     Sym S = new Sym("recordDef", myStrVal, recordTable);
+    recordTable.print();
     
 	try {
 		table.addDecl(myStrVal, S);
