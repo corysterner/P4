@@ -169,6 +169,19 @@ class DeclListNode extends ASTnode {
 	}
     }
     
+    //Analysis for record declarations
+    public void analysis(SymTab scopeTable, SymTab recordTable) {
+        Iterator it = myDecls.iterator();
+    	try {
+    	    while (it.hasNext()) {
+    	    	((VarDeclNode)it.next()).analysis(scopeTable, recordTable);
+    	    }
+    	} catch (NoSuchElementException ex) {
+                System.err.println("unexpected NoSuchElementException in DeclListNode.print");
+                System.exit(-1);
+    	}
+    }
+    
     // list of children (DeclNodes)
     private List<DeclNode> myDecls;
 }
@@ -321,12 +334,34 @@ class VarDeclNode extends DeclNode {
         
         if (myType instanceof RecordNode) {
         	RecordNode record = (RecordNode) myType;
-        	record.analysis(table);
+        	record.analysis();
         	myId.recordDeclarationAnalysis(table, record.getName());
         }
+        
         else { 
         	myId.analysis(table, myType.getType());
         }
+    }
+    
+    // Overloaded analysis for record declarations
+    public void analysis(SymTab scopeTable, SymTab recordTable) {
+        if (myType.getType() == "void") {
+        	ErrMsg.fatal(myId.getLineNum(), myId.getCharNum(),
+				"Non-function declared void");
+			ErrMsg.setAbort();
+        }
+        
+        if (myType instanceof RecordNode) {
+        	RecordNode record = (RecordNode) myType;
+        	record.analysis();
+        	myId.recordDeclarationAnalysis(scopeTable, recordTable,
+        			record.getName());
+        }
+        
+        else { 
+        	myId.analysis(table, myType.getType());
+        }
+    	
     }
 
     // three children
@@ -503,7 +538,7 @@ class RecordNode extends TypeNode {
     	return(myId.getName());
     }
     
-    public void analysis(SymTab table) {
+    public void analysis() {
     	myId.recordNodeAnalysis();
     }
     
@@ -915,12 +950,56 @@ class IdNode extends ExpNode {
     	return true;
     }
     
+    //Overloaded record declaration analysis in a record
+    public boolean recordDeclarationAnalysis(SymTab scopeTable, 
+    		SymTab recordTable, String name){
+    	//Look for the record type declaration
+    	Sym recordDef = new Sym(null);
+    	try {
+        recordDef = scopeTable.lookupGlobal(name);
+        
+        if (recordDef == null || recordDef.getType() != "recordDef") {
+    		ErrMsg.fatal(myLineNum, myCharNum, 
+    				"Name of record type invalid");
+    		ErrMsg.setAbort();
+    		return false;
+        }
+        
+        } catch (SymTabEmptyException ex) {
+    		ErrMsg.warn(myLineNum, myCharNum,
+    				"Empty SymTab");
+    		ErrMsg.fatal(myLineNum, myCharNum, 
+    				"Name of record type invalid");
+    		ErrMsg.setAbort();
+    		return false;
+    	}
+
+        
+        Sym S = new Sym("record", name, recordDef.getTable());
+        
+    	try {
+    		recordTable.addDecl(myStrVal, S);
+    	} catch (SymDuplicationException ex) {
+    		ErrMsg.fatal(myLineNum, myCharNum, 
+    				"Identifier multiply-declared");
+    		ErrMsg.setAbort();
+    		return false;
+    	} catch (SymTabEmptyException ex) {
+    		ErrMsg.warn(myLineNum, myCharNum,
+    				"Empty SymTab");
+    	}
+    	
+    	myRecordSymTab = recordDef.getTable();
+    	mySym = S;
+    	isDecl = true;
+    	return true;
+    }
+    
     //Name analysis method for net new record type declarations 
     public boolean recordDefDeclAnalysis(SymTab table) {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
-    SymTab recordTable = table;
-    recordTable.addScope();
+    SymTab recordTable = new SymTab();
     Sym S = new Sym("recordDef", myStrVal, recordTable);
     
 	try {
@@ -943,11 +1022,10 @@ class IdNode extends ExpNode {
     //Lookup if Id is in the records declaration scope
     public boolean isIdInRecord(SymTab table) {
         //Look for the Sym and thrown an error if none exists	
-    	System.out.print(myStrVal);
     	try {
-    		Sym S = table.lookupLocal(myStrVal);
+    		Sym S = table.lookupGlobal(myStrVal);
+    		table.print();
     		if (S == null) {
-    			table.print();
     			ErrMsg.fatal(myLineNum, myCharNum,
     					"Record field name invalid");
     			ErrMsg.setAbort();
@@ -982,6 +1060,7 @@ class IdNode extends ExpNode {
 	mySym = S;
 	isDecl = true;
     }
+    
     
     public void analysis(SymTab table) {
         //find the nearest Sym and thrown an error if none exists	    
