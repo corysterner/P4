@@ -359,7 +359,7 @@ class VarDeclNode extends DeclNode {
         }
         
         else { 
-        	myId.analysis(table, myType.getType());
+        	myId.analysis(recordTable, myType.getType());
         }
     	
     }
