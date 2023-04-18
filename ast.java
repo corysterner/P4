@@ -1223,7 +1223,7 @@ class DotAccessExpNode extends ExpNode {
 			}
 			
 			//Ensure that the LHS ID creates a symbol
-			if (!(myId.isIdInRecord(childRecordTable)){
+			if (!(myId.isIdInRecord(childRecordTable))){
 				return;
 			}
 			
