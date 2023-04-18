@@ -1214,6 +1214,7 @@ class DotAccessExpNode extends ExpNode {
 		//Run if LHS is a Dot access node
 		else if (myLoc instanceof DotAccessExpNode) {
 			DotAccessExpNode lhsId = (DotAccessExpNode) myLoc;
+			lhsId.analysis(table);
 			SymTab childRecordTable = lhsId.getRecordSymTab();
 			
 			if (childRecordTable == null) {
