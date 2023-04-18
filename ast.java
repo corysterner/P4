@@ -1164,6 +1164,17 @@ class DotAccessExpNode extends ExpNode {
         myId.unparse(p, 0);
     }
     
+    public String getType() {
+    	if (myParentRecord == null) {
+    		return null;
+    	}
+    	return (myParentRecord.getType());
+    }
+    
+    public SymTab getRecordSymTab() {
+    	myParentRecord.getTable();
+    }
+    
     // Name analysis for Dot access
     public void analysis(SymTab table) {
     	//Run if LHS is an ID node
@@ -1195,26 +1206,20 @@ class DotAccessExpNode extends ExpNode {
 		//Run if LHS is a Dot access node
 		else if (myLoc instanceof DotAccessExpNode) {
 			DotAccessExpNode lhsId = (DotAccessExpNode) myLoc;
-//			if (lhsId.getType() != "record") {
-//				lhsId.logError("Dot-access of non-record type");
-//				return;
-//			}
-//			
-//			SymTab recordTable = lhsId.getRecordSymTab();
-//			if (!myId.isIdInRecord(recordTable)) {
-//				return;
-//			}
-//			
-//			myParentRecord = myId.getSym();
+			if (lhsId.getType() != "record") {
+				lhsId.logError("Dot-access of non-record type");
+				return;
+			}
+			
+			SymTab recordTable = lhsId.getRecordSymTab();
+			if (!myId.isIdInRecord(recordTable)) {
+				return;
+			}
+			
+			myParentRecord = myId.getSym();
 		}
     }
-    
-    public String getType() {
-    	if (myParentRecord == null) {
-    		return null;
-    	}
-    	return (myParentRecord.getType());
-    }
+   
     
     
     // two children
