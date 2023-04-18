@@ -922,7 +922,11 @@ class IdNode extends ExpNode {
 	//if it already exists in our scope
     table.addScope();
     Sym S = new Sym("recordDef", myStrVal, table);
-    table.removeScope();
+    try {
+    	table.removeScope();
+    } catch (SymTabEmptyException ex) {
+    	
+    }
     
 	try {
 		table.addDecl(myStrVal, S);
