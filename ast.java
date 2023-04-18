@@ -1084,6 +1084,7 @@ class IdNode extends ExpNode {
         //find the nearest Sym and thrown an error if none exists	    
     	try {
     	System.out.println(myStrVal);
+    	table.print();
 		Sym S = table.lookupGlobal(myStrVal);
     		if (S == null) {
 			ErrMsg.fatal(myLineNum, myCharNum,
