@@ -1105,7 +1105,7 @@ class DotAccessExpNode extends ExpNode {
 			//Ensure the RHS ID is declared in the record def
 			SymTab recordTable = lhsId.getSym().getTable();
 			System.out.println(myId.getCharNum() + " " +
-					myId.getLineNum() + " " + myId.getType());
+					myId.getLineNum() + " " + myId.getName());
 			if (!(myId.isIdInRecord(recordTable))) {
 				return;
 			}
