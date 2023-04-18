@@ -10,7 +10,6 @@ public class Sym {
 	public Sym(String type, String name, SymTab table) {
 		this.name = name;
 		this.type = type;
-		table.addScope();
 		this.table = table;
 	}
 	
