@@ -1175,7 +1175,7 @@ class DotAccessExpNode extends ExpNode {
     	return myParentId.getSym().getTable();
     }
     
-    public IdNode getParentID() {
+    public IdNode getParentId() {
     	return myParentId;
     }
     
