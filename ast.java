@@ -1206,9 +1206,8 @@ class DotAccessExpNode extends ExpNode {
 				return;
 			}
 			
-			if (myId.getType() == "record") {
-				mySymTab = myId.getSym().getTable();
-			}
+			
+			mySymTab = recordTable;
 		}
 		
 		//Run if LHS is a Dot access node
