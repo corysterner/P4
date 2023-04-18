@@ -1185,7 +1185,7 @@ class DotAccessExpNode extends ExpNode {
     // Name analysis for Dot access
     public void analysis(SymTab table) {
     	//Run if LHS is an ID node
-    	
+    try {
 		if (myLoc instanceof IdNode) {
 			IdNode lhsId = (IdNode) myLoc;
 			
@@ -1231,6 +1231,10 @@ class DotAccessExpNode extends ExpNode {
 				mySymTab = myId.getSym().getTable();
 			}
 		}
+    }
+    catch (Exception e){
+    	
+    }
 		
     }
    
