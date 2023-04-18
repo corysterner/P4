@@ -1223,13 +1223,7 @@ class DotAccessExpNode extends ExpNode {
 			}
 			
 			//Ensure that the LHS ID creates a symbol
-			if (!(lhsId.getChildId().locAnalysis(childRecordTable))){
-				return;
-			}
-			
-			
-			SymTab recordTable = lhsId.getRecordSymTab();
-			if (!myId.isIdInRecord(recordTable)) {
+			if (!(myId.isIdInRecord(childRecordTable)){
 				return;
 			}
 			
