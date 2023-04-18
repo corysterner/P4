@@ -1024,7 +1024,6 @@ class IdNode extends ExpNode {
         //Look for the Sym and thrown an error if none exists	
     	try {
     		Sym S = table.lookupGlobal(myStrVal);
-    		table.print();
     		if (S == null) {
     			ErrMsg.fatal(myLineNum, myCharNum,
     					"Record field name invalid");
