@@ -899,6 +899,9 @@ class IdNode extends ExpNode {
     }
     
     public String getType() {
+    	if (mySym == null) {
+    		return null;
+    	}
     	return (mySym.getType());
     }
     
