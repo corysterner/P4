@@ -1204,7 +1204,6 @@ class DotAccessExpNode extends ExpNode {
 				return;
 			}
 			
-			myType = myId.getType();
 			
 		}
 		
@@ -1238,7 +1237,6 @@ class DotAccessExpNode extends ExpNode {
     // two children
     private ExpNode myLoc;    
     private IdNode myId;
-    private String type;
 }
 
 class AssignExpNode extends ExpNode {
