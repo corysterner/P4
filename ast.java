@@ -132,7 +132,6 @@ class ProgramNode extends ASTnode {
 
     public void analysis() {
     	SymTab table = new SymTab();
-		table.addScope();
     	myDeclList.analysis(table);
     }
 
@@ -430,7 +429,7 @@ class RecordDeclNode extends DeclNode {
     
     public void analysis(SymTab table) {
     	if (myId.recordDefDeclAnalysis(table)) {
-    		myDeclList.analysis(myId.getRecordSymTab());
+    		myDeclList.analysis(myId.getSym().getTable());
     	}
     }
 
@@ -923,7 +922,6 @@ class IdNode extends ExpNode {
     SymTab recordTable = table;
     recordTable.addScope();
     Sym S = new Sym("recordDef", myStrVal, recordTable);
-    recordTable.print();
     
 	try {
 		table.addDecl(myStrVal, S);
