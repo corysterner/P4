@@ -1164,23 +1164,21 @@ class DotAccessExpNode extends ExpNode {
     }
     
     public String getType() {
-    	if (myParentId == null) {
-    		return null;
-    	}
-    	return (myParentId.getType());
+    	return (myId.getType());
     }
     
     public SymTab getRecordSymTab() {
-    	return myParentId.getSym().getTable();
+    	return myId.getSym().getTable();
     }
     
     public IdNode getParentId() {
-    	return myParentId;
+    	return myId;
     }
     
     // Name analysis for Dot access
     public void analysis(SymTab table) {
     	//Run if LHS is an ID node
+    	
 		if (myLoc instanceof IdNode) {
 			IdNode lhsId = (IdNode) myLoc;
 			
@@ -1219,8 +1217,6 @@ class DotAccessExpNode extends ExpNode {
 			
 			
 		}
-		
-		myParentId = myId;
 		
     }
    
