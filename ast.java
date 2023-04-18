@@ -920,8 +920,9 @@ class IdNode extends ExpNode {
     public boolean recordDefDeclAnalysis(SymTab table) {
     	//create a new Sym and place it in the table, throwing an error
 	//if it already exists in our scope
-    
+    table.addScope();
     Sym S = new Sym("recordDef", myStrVal, table);
+    table.removeScope();
     
 	try {
 		table.addDecl(myStrVal, S);
