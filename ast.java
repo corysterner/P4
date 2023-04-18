@@ -1212,14 +1212,15 @@ class DotAccessExpNode extends ExpNode {
 		else if (myLoc instanceof DotAccessExpNode) {
 			DotAccessExpNode lhsId = (DotAccessExpNode) myLoc;
 			
-			//Ensure that the LHS ID creates a symbol
-			if (!(lhsId.getChildId().locAnalysis(table))){
-				return;
-			}
 			
 			if (lhsId.getType() != "record") {
 				System.out.print(lhsId.getType());
 				lhsId.getChildId().logError("Dot-access of non-record type");
+				return;
+			}
+			
+			//Ensure that the LHS ID creates a symbol
+			if (!(lhsId.getChildId().locAnalysis(lhsId.getRecordSymTab()))){
 				return;
 			}
 			
