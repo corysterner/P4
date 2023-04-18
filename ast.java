@@ -942,12 +942,12 @@ class IdNode extends ExpNode {
     
     //Lookup if Id is in the records declaration scope
     public boolean isIdInRecord(SymTab table) {
-        //Look for the Sym and thrown an error if none exists	    
+        //Look for the Sym and thrown an error if none exists	
+    	System.out.print(myStrVal);
     	try {
     		Sym S = table.lookupLocal(myStrVal);
     		if (S == null) {
     			table.print();
-    			System.out.print(myStrVal);
     			ErrMsg.fatal(myLineNum, myCharNum,
     					"Record field name invalid");
     			ErrMsg.setAbort();
