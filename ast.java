@@ -464,7 +464,7 @@ class RecordDeclNode extends DeclNode {
     
     public void analysis(SymTab table) {
     	if (myId.recordDefDeclAnalysis(table)) {
-    		myDeclList.analysis(myId.getSym().getTable());
+    		myDeclList.analysis(table, myId.getSym().getTable());
     	}
     }
 
