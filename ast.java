@@ -1204,13 +1204,16 @@ class DotAccessExpNode extends ExpNode {
 				return;
 			}
 			
-			
 		}
 		
 		//Run if LHS is a Dot access node
 		else if (myLoc instanceof DotAccessExpNode) {
 			DotAccessExpNode lhsId = (DotAccessExpNode) myLoc;
 			
+			//Ensure that the LHS ID creates a symbol
+			if (!(lhsId.getChildId().locAnalysis(lhsId.getRecordSymTab()))){
+				return;
+			}
 			
 			if (lhsId.getType() != "record") {
 				System.out.print(lhsId.getType());
@@ -1218,10 +1221,6 @@ class DotAccessExpNode extends ExpNode {
 				return;
 			}
 			
-			//Ensure that the LHS ID creates a symbol
-			if (!(lhsId.getChildId().locAnalysis(lhsId.getRecordSymTab()))){
-				return;
-			}
 			
 			SymTab recordTable = lhsId.getRecordSymTab();
 			if (!myId.isIdInRecord(recordTable)) {
@@ -1229,6 +1228,7 @@ class DotAccessExpNode extends ExpNode {
 			}
 			
 		}
+		myType = myId.getType();
 		
     }
    
@@ -1237,6 +1237,7 @@ class DotAccessExpNode extends ExpNode {
     // two children
     private ExpNode myLoc;    
     private IdNode myId;
+    private String myType;
 }
 
 class AssignExpNode extends ExpNode {
