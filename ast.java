@@ -1165,7 +1165,7 @@ class DotAccessExpNode extends ExpNode {
     }
     
     public String getType() {
-    	if (myParentRecord == null) {
+    	if (myParentId == null) {
     		return null;
     	}
     	return (myParentId.getType());
@@ -1197,6 +1197,7 @@ class DotAccessExpNode extends ExpNode {
 			}
 			
 			//Ensure the RHS ID is declared in the record def
+			SymTab recordTable = lhsId.getSym().getTable();
 			if (!(myId.isIdInRecord(recordTable))) {
 				return;
 			}
@@ -1208,7 +1209,7 @@ class DotAccessExpNode extends ExpNode {
 		else if (myLoc instanceof DotAccessExpNode) {
 			DotAccessExpNode lhsId = (DotAccessExpNode) myLoc;
 			if (lhsId.getType() != "record") {
-				lhs.getParentId().logError("Dot-access of non-record type");
+				lhsId.getParentId().logError("Dot-access of non-record type");
 				return;
 			}
 			
